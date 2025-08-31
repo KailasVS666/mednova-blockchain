@@ -1,0 +1,14 @@
+{
+    "name": "node-backend",
+    "version": "1.0.0",
+    "description": "MedNova Backend API Server",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "dependencies": {
+        "express": "^4.21.2",
+        "fabric-ca-client": "^2.2.13",
+        "fabric-network": "^2.2.20"
+    }
+}

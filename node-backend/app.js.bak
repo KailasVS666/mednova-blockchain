@@ -1,0 +1,109 @@
+const express = require('express');
+const { Gateway, Wallets } = require('fabric-network');
+const fs = require('fs');
+const path = require('path');
+
+const app = express();
+app.use(express.json());
+
+// Enable debug logging for Fabric SDK
+process.env.FABRIC_LOG = 'debug';
+
+// Load CCP
+const ccpPath = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
+const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
+const ccp = JSON.parse(ccpJSON);
+
+// Embed Org1 peer TLS certificate
+const org1TlsCertPath = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'tlsca', 'tlsca.org1.example.com-cert.pem');
+const org1TlsCert = fs.readFileSync(org1TlsCertPath);
+ccp.peers['peer0.org1.example.com'].tlsCACerts.pem = org1TlsCert.toString();
+ccp.peers['peer0.org1.example.com'].grpcOptions = { 'ssl-target-name-override': 'peer0.org1.example.com' };
+
+// Embed Org2 peer TLS certificate
+const org2TlsCertPath = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org2.example.com', 'tlsca', 'tlsca.org2.example.com-cert.pem');
+const org2TlsCert = fs.readFileSync(org2TlsCertPath);
+ccp.peers['peer0.org2.example.com'] = {
+  url: 'grpcs://localhost:9051',
+  tlsCACerts: { pem: org2TlsCert.toString() },
+  grpcOptions: { 'ssl-target-name-override': 'peer0.org2.example.com' }
+};
+
+// Embed orderer TLS certificate
+const ordererTlsCertPath = path.resolve(__dirname, '..', 'test-network', 'organizations', 'ordererOrganizations', 'example.com', 'tlsca', 'tlsca.example.com-cert.pem');
+const ordererTlsCert = fs.readFileSync(ordererTlsCertPath);
+ccp.orderers['orderer.example.com'].tlsCACerts.pem = ordererTlsCert.toString();
+ccp.orderers['orderer.example.com'].grpcOptions = { 'ssl-target-name-override': 'orderer.example.com' };
+
+// Connect to gateway
+async function connectGateway() {
+  try {
+    const walletPath = path.join(__dirname, 'wallet');
+    const wallet = await Wallets.newFileSystemWallet(walletPath);
+    const gateway = new Gateway();
+    await gateway.connect(ccp, {
+      wallet,
+      identity: 'appUser',
+      discovery: { enabled: true, asLocalhost: true }
+    });
+    console.log('Gateway connected successfully');
+    return gateway;
+  } catch (error) {
+    console.error('Failed to connect gateway:', error);
+    throw error;
+  }
+}
+
+// Register Patient endpoint
+app.post('/patients', async (req, res) => {
+  try {
+    const gateway = await connectGateway();
+    const network = await gateway.getNetwork('mychannel');
+    const contract = network.getContract('mednova');
+    await contract.submitTransaction('RegisterPatient', 'patient01', 'Test', 'Patient', '2000-01-01', 'Male', '1234567890', '0987654321');
+    console.log('RegisterPatient transaction submitted');
+    gateway.disconnect();
+    res.status(200).send('Patient registered successfully');
+  } catch (error) {
+    console.error('Failed to submit RegisterPatient:', error);
+    res.status(500).send(`Failed to register patient: ${error.message}`);
+  }
+});
+
+// Log Health Record endpoint
+app.post('/health-records', async (req, res) => {
+  try {
+    const gateway = await connectGateway();
+    const network = await gateway.getNetwork('mychannel');
+    const contract = network.getContract('mednova');
+    await contract.submitTransaction('LogHealthRecord', 'patient01', '2025-08-31', 'Fever', 'Details');
+    console.log('LogHealthRecord transaction submitted');
+    gateway.disconnect();
+    res.status(200).send('Health record logged successfully');
+  } catch (error) {
+    console.error('Failed to submit LogHealthRecord:', error);
+    res.status(500).send(`Failed to log health record: ${error.message}`);
+  }
+});
+
+// Query Patient endpoint
+app.get('/patients/:patientID', async (req, res) => {
+  try {
+    const gateway = await connectGateway();
+    const network = await gateway.getNetwork('mychannel');
+    const contract = network.getContract('mednova');
+    const result = await contract.evaluateTransaction('QueryPatient', req.params.patientID);
+    console.log('QueryPatient transaction evaluated');
+    gateway.disconnect();
+    res.status(200).json(JSON.parse(result.toString()));
+  } catch (error) {
+    console.error('Failed to evaluate QueryPatient:', error);
+    res.status(500).send(`Failed to query patient: ${error.message}`);
+  }
+});
+
+// Start server
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});

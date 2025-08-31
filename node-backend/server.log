@@ -1,0 +1,34 @@
+Initializing Fabric connection...
+Wallet path: /workspaces/fabric-samples/node-backend/wallet
+Connecting to gateway with self-contained connection profile...
+Fabric connection initialized successfully.
+Server is running on http://localhost:3000
+Submitting 'RegisterPatient' transaction for patient: patient01
+2025-08-31T00:48:07.060Z - [31merror[39m: [Transaction]: Error: No valid responses from any peers. Errors:
+    at newEndorsementError (/workspaces/fabric-samples/node-backend/node_modules/fabric-network/lib/transaction.js:77:12)
+    at getResponsePayload (/workspaces/fabric-samples/node-backend/node_modules/fabric-network/lib/transaction.js:45:23)
+    at Transaction.submit (/workspaces/fabric-samples/node-backend/node_modules/fabric-network/lib/transaction.js:258:28)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /workspaces/fabric-samples/node-backend/app.js:80:9
+Failed to submit transaction: Error: No valid responses from any peers. Errors:
+Submitting 'LogHealthRecord' transaction for patient: patient01
+2025-08-31T00:48:07.078Z - [31merror[39m: [Transaction]: Error: No valid responses from any peers. Errors:
+    at newEndorsementError (/workspaces/fabric-samples/node-backend/node_modules/fabric-network/lib/transaction.js:77:12)
+    at getResponsePayload (/workspaces/fabric-samples/node-backend/node_modules/fabric-network/lib/transaction.js:45:23)
+    at Transaction.submit (/workspaces/fabric-samples/node-backend/node_modules/fabric-network/lib/transaction.js:258:28)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /workspaces/fabric-samples/node-backend/app.js:95:9
+Failed to submit transaction: Error: No valid responses from any peers. Errors:
+Evaluating 'QueryPatient' transaction for patient: patient01
+2025-08-31T00:48:07.091Z - [31merror[39m: [SingleQueryHandler]: evaluate: message=Query failed. Errors: [], stack=FabricError: Query failed. Errors: []
+    at SingleQueryHandler.evaluate (/workspaces/fabric-samples/node-backend/node_modules/fabric-network/lib/impl/query/singlequeryhandler.js:70:23)
+    at Transaction.evaluate (/workspaces/fabric-samples/node-backend/node_modules/fabric-network/lib/transaction.js:322:49)
+    at ContractImpl.evaluateTransaction (/workspaces/fabric-samples/node-backend/node_modules/fabric-network/lib/contract.js:213:45)
+    at /workspaces/fabric-samples/node-backend/app.js:107:39
+    at Layer.handle [as handle_request] (/workspaces/fabric-samples/node-backend/node_modules/express/lib/router/layer.js:95:5)
+    at next (/workspaces/fabric-samples/node-backend/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/workspaces/fabric-samples/node-backend/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/workspaces/fabric-samples/node-backend/node_modules/express/lib/router/layer.js:95:5)
+    at /workspaces/fabric-samples/node-backend/node_modules/express/lib/router/index.js:284:15
+    at param (/workspaces/fabric-samples/node-backend/node_modules/express/lib/router/index.js:365:14), name=FabricError
+Failed to evaluate transaction: FabricError: Query failed. Errors: []
