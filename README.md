@@ -1,73 +1,141 @@
-[//]: # (SPDX-License-Identifier: CC-BY-4.0)
 
-# Hyperledger Fabric Samples
+# MedNova Blockchain Project
 
-You can use Fabric samples to get started working with Hyperledger Fabric, explore important Fabric features, and learn how to build applications that can interact with blockchain networks using the Fabric SDKs. To learn more about Hyperledger Fabric, visit the [Fabric documentation](https://hyperledger-fabric.readthedocs.io/en/latest).
+A comprehensive suite of Hyperledger Fabric samples, smart contracts, applications, and guides for asset transfer, tokenization, auctions, private data, and more. This repository is designed to help you learn, develop, and deploy blockchain solutions using Hyperledger Fabric.
 
-Note that this branch contains samples for the latest Fabric release. For older Fabric versions, refer to the corresponding branches:
+---
 
-- [release-2.2](https://github.com/hyperledger/fabric-samples/tree/release-2.2)
-- [release-1.4](https://github.com/hyperledger/fabric-samples/tree/release-1.4)
+## Table of Contents
 
-## Getting started with the Fabric samples
+- [Overview](#overview)
+- [Project Structure](#project-structure)
+- [Key Features & Samples](#key-features--samples)
+- [Getting Started](#getting-started)
+- [Test Networks](#test-networks)
+- [Tokenization](#tokenization)
+- [Security & HSM](#security--hsm)
+- [Contributing](#contributing)
+- [License](#license)
+- [References](#references)
 
-To use the Fabric samples, you need to download the Fabric Docker images and the Fabric CLI tools. First, make sure that you have installed all of the [Fabric prerequisites](https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html). You can then follow the instructions to [Install the Fabric Samples, Binaries, and Docker Images](https://hyperledger-fabric.readthedocs.io/en/latest/install.html) in the Fabric documentation. In addition to downloading the Fabric images and tool binaries, the Fabric samples will also be cloned to your local machine.
+---
 
-## Test network
+## Overview
 
-The [Fabric test network](test-network) in the samples repository provides a Docker Compose based test network with two
-Organization peers and an ordering service node. You can use it on your local machine to run the samples listed below.
-You can also use it to deploy and test your own Fabric chaincodes and applications. To get started, see
-the [test network tutorial](https://hyperledger-fabric.readthedocs.io/en/latest/test_network.html).
+This repository provides:
 
-The [Kubernetes Test Network](test-network-k8s) sample builds upon the Compose network, constructing a Fabric
-network with peer, orderer, and CA infrastructure nodes running on Kubernetes.  In addition to providing a sample
-Kubernetes guide, the Kube test network can be used as a platform to author and debug _cloud ready_ Fabric Client
-applications on a development or CI workstation.
+- Sample smart contracts (chaincode) and client applications in Go, Java, JavaScript, and TypeScript.
+- Tutorials and guides for asset transfer, private data, events, auctions, and tokens (ERC-20, ERC-721, ERC-1155, UTXO).
+- Tools for running test networks (Docker Compose, Kubernetes).
+- Advanced topics: Attribute-based access control, state-based endorsement, secured agreements, off-chain data, and hardware security modules.
 
+---
 
-## Asset transfer samples and tutorials
+## Project Structure
 
-The asset transfer series provides a series of sample smart contracts and applications to demonstrate how to store and transfer assets using Hyperledger Fabric.
-Each sample and associated tutorial in the series demonstrates a different core capability in Hyperledger Fabric. The **Basic** sample provides an introduction on how
-to write smart contracts and how to interact with a Fabric network using the Fabric SDKs. The **Ledger queries**, **Private data**, and **State-based endorsement**
-samples demonstrate these additional capabilities. Finally, the **Secured agreement** sample demonstrates how to bring all the capabilities together to securely
-transfer an asset in a more realistic transfer scenario.
+- `asset-transfer-basic/` — Basic asset transfer samples and REST APIs.
+- `asset-transfer-private-data/` — Private data collections and transfer.
+- `asset-transfer-events/` — Emitting and handling chaincode events.
+- `asset-transfer-abac/` — Attribute-based access control.
+- `asset-transfer-ledger-queries/` — Advanced ledger queries.
+- `asset-transfer-sbe/` — State-based endorsement.
+- `asset-transfer-secured-agreement/` — Secure asset transfer scenarios.
+- `auction-simple/`, `auction-dutch/` — Auction smart contracts and apps.
+- `token-sdk/` — REST API and SDK for privacy-friendly UTXO tokens.
+- `token-erc-20/`, `token-erc-721/`, `token-erc-1155/`, `token-utxo/` — Token standards implementations.
+- `hardware-security-module/` — HSM integration samples.
+- `test-network/`, `test-network-k8s/` — Local and Kubernetes-based test networks.
+- `full-stack-asset-transfer-guide/` — End-to-end development and deployment guide.
+- `node-backend/` — Node.js backend integration example.
+- `off_chain_data/` — Off-chain data and analytics integration.
 
-|  **Smart Contract** | **Description** | **Tutorial** | **Smart contract languages** | **Application languages** |
-| -----------|------------------------------|----------|---------|---------|
-| [Basic](asset-transfer-basic) | The Basic sample smart contract that allows you to create and transfer an asset by putting data on the ledger and retrieving it. This sample is recommended for new Fabric users. | [Writing your first application](https://hyperledger-fabric.readthedocs.io/en/latest/write_first_app.html) | Go, JavaScript, TypeScript, Java | Go, TypeScript, Java |
-| [Ledger queries](asset-transfer-ledger-queries) | The ledger queries sample demonstrates range queries and transaction updates using range queries (applicable for both LevelDB and CouchDB state databases), and how to deploy an index with your chaincode to support JSON queries (applicable for CouchDB state database only). | [Using CouchDB](https://hyperledger-fabric.readthedocs.io/en/latest/couchdb_tutorial.html) | Go, JavaScript | Java, JavaScript |
-| [Private data](asset-transfer-private-data) | This sample demonstrates the use of private data collections, how to manage private data collections with the chaincode lifecycle, and how the private data hash can be used to verify private data on the ledger. It also demonstrates how to control asset updates and transfers using client-based ownership and access control. | [Using Private Data](https://hyperledger-fabric.readthedocs.io/en/latest/private_data_tutorial.html) | Go, TypeScript, Java | TypeScript |
-| [State-Based Endorsement](asset-transfer-sbe) | This sample demonstrates how to override the chaincode-level endorsement policy to set endorsement policies at the key-level (data/asset level). | [Using State-based endorsement](https://github.com/hyperledger/fabric-samples/tree/main/asset-transfer-sbe) | Java, TypeScript | JavaScript |
-| [Secured agreement](asset-transfer-secured-agreement) | Smart contract that uses implicit private data collections, state-based endorsement, and organization-based ownership and access control to keep data private and securely transfer an asset with the consent of both the current owner and buyer. | [Secured asset transfer](https://hyperledger-fabric.readthedocs.io/en/latest/secured_asset_transfer/secured_private_asset_transfer_tutorial.html)  | Go | TypeScript |
-| [Events](asset-transfer-events) | The events sample demonstrates how smart contracts can emit events that are read by the applications interacting with the network. | [README](asset-transfer-events/README.md)  | Go, JavaScript, Java | Go, TypeScript, Java |
-| [Attribute-based access control](asset-transfer-abac) | Demonstrates the use of attribute and identity based access control using a simple asset transfer scenario | [README](asset-transfer-abac/README.md)  | Go | _None_ |
+---
 
-## Full stack asset transfer guide
+## Key Features & Samples
 
-The [full stack asset transfer guide](full-stack-asset-transfer-guide#readme) workshop demonstrates how a generic asset transfer solution for Hyperledger Fabric can be developed and deployed. This covers chaincode development, client application development, and deployment to a production-like environment.
+- **Asset Transfer**: Create, read, update, transfer, and delete assets on the blockchain.
+- **Private Data**: Secure asset data using private data collections.
+- **Events**: Emit and listen to chaincode events.
+- **Auctions**: Run simple and Dutch auctions with privacy features.
+- **Tokenization**: Issue, transfer, and redeem tokens (ERC-20, ERC-721, ERC-1155, UTXO).
+- **Security**: Integrate with Hardware Security Modules (HSM) for key management.
+- **REST APIs**: Interact with the blockchain via RESTful services.
+- **Kubernetes Support**: Deploy and manage networks in cloud-native environments.
 
-## Additional samples
+---
 
-Additional samples demonstrate various Fabric use cases and application patterns.
+## Getting Started
 
-|  **Sample** | **Description** | **Documentation** |
-| -------------|------------------------------|------------------|
-| [Off chain data](off_chain_data) | Learn how to use block events to build an off-chain database for reporting and analytics. | [Peer channel-based event services](https://hyperledger-fabric.readthedocs.io/en/latest/peer_event_services.html) |
-| [Token SDK](token-sdk) | Sample REST API around the Hyperledger Labs [Token SDK](https://github.com/hyperledger-labs/fabric-token-sdk) for privacy friendly (zero knowledge proof) UTXO transactions. | [README](token-sdk/README.md) |
-| [Token ERC-20](token-erc-20) | Smart contract demonstrating how to create and transfer fungible tokens using an account-based model. | [README](token-erc-20/README.md) |
-| [Token UTXO](token-utxo) | Smart contract demonstrating how to create and transfer fungible tokens using a UTXO (unspent transaction output) model. | [README](token-utxo/README.md) |
-| [Token ERC-1155](token-erc-1155) | Smart contract demonstrating how to create and transfer multiple tokens (both fungible and non-fungible) using an account based model. | [README](token-erc-1155/README.md) |
-| [Token ERC-721](token-erc-721) | Smart contract demonstrating how to create and transfer non-fungible tokens using an account-based model. | [README](token-erc-721/README.md) |
-| [High throughput](high-throughput) | Learn how you can design your smart contract to avoid transaction collisions in high volume environments. | [README](high-throughput/README.md) |
-| [Simple Auction](auction-simple) | Run an auction where bids are kept private until the auction is closed, after which users can reveal their bid. | [README](auction-simple/README.md) |
-| [Dutch Auction](auction-dutch) | Run an auction in which multiple items of the same type can be sold to more than one buyer. This example also includes the ability to add an auditor organization. | [README](auction-dutch/README.md) |
+1. **Prerequisites**:  
+	 - [Install Fabric prerequisites](https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html)
+	 - Docker, Docker Compose, Go, Node.js, Java, and (optionally) Kubernetes
 
+2. **Clone the repository**:
+	 ```sh
+	 git clone https://github.com/KailasVS666/mednova-blockchain.git
+	 cd mednova-blockchain
+	 ```
 
-## License <a name="license"></a>
+3. **Install Fabric binaries and Docker images**:
+	 ```sh
+	 curl -sSLO https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh
+	 chmod +x install-fabric.sh
+	 ./install-fabric.sh docker binary
+	 ```
 
-Hyperledger Project source code files are made available under the Apache
-License, Version 2.0 (Apache-2.0), located in the [LICENSE](LICENSE) file.
-Hyperledger Project documentation files are made available under the Creative
-Commons Attribution 4.0 International License (CC-BY-4.0), available at http://creativecommons.org/licenses/by/4.0/.
+4. **Run a test network**:
+	 - Docker Compose: See `test-network/README.md`
+	 - Kubernetes: See `test-network-k8s/README.md`
+
+5. **Deploy and test samples**:
+	 - Follow the README in each sample directory for specific instructions.
+
+---
+
+## Test Networks
+
+- **Docker Compose**:  
+	Use `test-network` for local development and testing.
+- **Kubernetes**:  
+	Use `test-network-k8s` for cloud-native deployments and advanced scenarios.
+
+---
+
+## Tokenization
+
+- **Token SDK**:  
+	REST API for privacy-preserving UTXO tokens. See `token-sdk/README.md` for setup and usage.
+- **ERC Standards**:  
+	- ERC-20: Fungible tokens
+	- ERC-721: Non-fungible tokens
+	- ERC-1155: Multi-token standard
+
+---
+
+## Security & HSM
+
+- **Hardware Security Module**:  
+	See `hardware-security-module/README.md` for using HSMs with Fabric identities and transactions.
+
+---
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for guidelines. Maintainers are listed in [MAINTAINERS.md](MAINTAINERS.md).
+
+---
+
+## License
+
+- Source code: [Apache 2.0](LICENSE)
+- Documentation: [CC-BY-4.0](http://creativecommons.org/licenses/by/4.0/)
+
+---
+
+## References
+
+- [Hyperledger Fabric Documentation](https://hyperledger-fabric.readthedocs.io/en/latest/)
+- [Fabric Samples Tutorials](https://hyperledger-fabric.readthedocs.io/en/latest/write_first_app.html)
+- [Token SDK](https://github.com/hyperledger-labs/fabric-token-sdk)
+
+---
